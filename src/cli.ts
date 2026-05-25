@@ -333,6 +333,7 @@ export async function runCli() {
   /search      Choose preferred web search provider
   /rules       Show research rules
   /clear       Clear conversation
+  /exit        Exit Dexter
   ↑ / ↓        Navigate input history`;
 
   const handleSlashCommand = async (command: string) => {
@@ -387,6 +388,10 @@ export async function runCli() {
         chatLog.addChild(new Text(theme.muted(HELP_TEXT), 0, 0));
         tui.requestRender();
         break;
+      case 'exit':
+      case 'quit':
+        tui.stop();
+        process.exit(0);
     }
   };
 
