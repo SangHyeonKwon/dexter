@@ -37,31 +37,6 @@ Dexter는 복잡한 금융 질문을 받아 명확한 단계별 리서치 계획
 
 Dexter는 미국 주식과 한국 주식을 **하나의 에이전트에서 동시에** 다룰 수 있습니다. 사용자가 시장을 명시할 필요 없이, LLM이 티커 형태와 회사명 언어를 보고 알맞은 데이터 소스를 골라 호출합니다. (한국 데이터 활성화는 [빠른 시작](#-빠른-시작)의 환경 변수 참고.)
 
-### 동작 방식
-
-```mermaid
-flowchart TB
-    Q[사용자 쿼리] --> LLM{LLM 라우팅}
-
-    LLM -->|6자리 숫자 티커<br/>한국어 회사명| KR[KR 툴]
-    LLM -->|알파벳 티커<br/>영문 회사명| US[US 툴]
-    LLM -->|크로스마켓 비교| Both[양쪽 모두 호출]
-
-    KR --> DART[(DART API<br/>공시·재무)]
-    KR --> KRX[(KRX<br/>시세·공매도)]
-
-    US --> FD[(Financial Datasets<br/>재무·시세)]
-    US --> SEC[(SEC EDGAR<br/>공시)]
-
-    Both --> DART
-    Both --> FD
-
-    DART --> Out[종합 답변]
-    KRX --> Out
-    FD --> Out
-    SEC --> Out
-```
-
 ### 신규 툴 (DART 기반)
 
 `DART_API_KEY`가 설정되면 자동 등록됩니다.
@@ -86,25 +61,6 @@ DART에 없는 한국 특화 데이터. 툴마다 소스·키가 다릅니다.
 ### 종목 코드 해결 흐름
 
 LLM이 "삼성전자" 같은 자연어 입력을 받으면, 툴 내부에서 **티커 → corp_code** 변환을 거쳐 DART API를 호출합니다.
-
-```mermaid
-sequenceDiagram
-    participant U as 사용자
-    participant L as LLM
-    participant T as get_financials_kr
-    participant R as TickerRegistry<br/>(캐시)
-    participant D as DART API
-
-    U->>L: "삼성전자 재무 어때?"
-    L->>L: 한국 종목 인식<br/>→ 005930으로 정규화
-    L->>T: get_financials_kr({ticker: "005930"})
-    T->>R: resolve("005930")
-    R-->>T: corp_code: "00126380"
-    T->>D: 사업보고서 조회 (corp_code)
-    D-->>T: 재무 데이터
-    T-->>L: 정형화된 결과
-    L-->>U: 분석 답변 작성
-```
 
 `TickerRegistry`는 DART의 마스터 파일(`corpCode.xml`)을 **첫 실행 시 한 번 다운로드**해 `.dexter/cache/`에 저장하고, 7일마다 백그라운드에서 갱신합니다. 신규 상장·사명 변경·물적분할이 자동 반영됩니다.
 
