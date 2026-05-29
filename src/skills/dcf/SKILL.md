@@ -122,6 +122,8 @@ Discount all FCFs → sum for Enterprise Value → subtract Net Debt → divide 
 
 Create 3×3 matrix: WACC (base ±1%) vs terminal growth (2.0%, 2.5%, 3.0%).
 
+> **🇰🇷 KR override:** terminal-growth axis = **1.5% / 2.0% / 2.5%** (centered on Korea's ~2.0% terminal growth).
+
 ## Step 7: Validate Results
 
 Before presenting, verify these sanity checks:
@@ -149,4 +151,4 @@ Present a structured summary including:
 > **🇰🇷 KR override:**
 > - Report all values in **KRW** (intrinsic value per share, market cap). Run the per-share sanity check in KRW.
 > - Sensitivity matrix terminal-growth axis: **1.5% / 2.0% / 2.5%**.
-> - Add a short **"세후 실현수익률 주의"** caption: the DCF fair value is the company's intrinsic (pre-investor-tax) value. When an investor *realizes* the return, Korean securities transaction tax (증권거래세, ~0.18% of sale proceeds on KOSPI as of 2026) and dividend income tax (배당소득세 — 15.4% withholding for residents; ~22% or the tax-treaty rate for foreign holders) reduce the net realized return. These do **not** change the intrinsic value computed above — they are an investor-level adjustment on top of it.
+> - Add a short **"세후 실현수익률 주의"** caption: the DCF fair value is the company's intrinsic (pre-investor-tax) value. When an investor *realizes* the return, Korean securities transaction tax (증권거래세, as of 2026 ~0.20% of sale proceeds: KOSPI 0.05% 거래세 + 0.15% 농어촌특별세, KOSDAQ 0.20%) and dividend income tax (배당소득세 — 15.4% withholding for residents; ~22% or the tax-treaty rate for foreign holders) reduce the net realized return. These do **not** change the intrinsic value computed above — they are an investor-level adjustment on top of it.
