@@ -79,6 +79,9 @@ export const getFilingsKr = new DynamicStructuredTool({
       pblntf_ty: input.filing_type ? PBLNTF_TY[input.filing_type] : undefined,
       page_count: input.limit,
       page_no: 1,
+      // Don't rely on DART's implicit default ordering — promise most-recent-first explicitly.
+      sort: 'date',
+      sort_mth: 'desc',
     };
 
     try {
@@ -91,7 +94,7 @@ export const getFilingsKr = new DynamicStructuredTool({
           ticker,
           corp_code: resolved.corp_code,
           corp_name: resolved.corp_name,
-          filings: data.list ?? [],
+          filings: Array.isArray(data.list) ? data.list : [],
         },
         [url],
       );
