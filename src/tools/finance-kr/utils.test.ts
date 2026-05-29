@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import {
   toDartDate,
+  toIsoDate,
   sortByRceptDtDesc,
   isNoDataError,
   parseKrxNumber,
@@ -10,6 +11,21 @@ import {
 describe('toDartDate', () => {
   it('strips dashes from an ISO date', () => {
     expect(toDartDate('2024-03-15')).toBe('20240315');
+  });
+});
+
+describe('toIsoDate', () => {
+  it('converts KRX YYYY/MM/DD', () => {
+    expect(toIsoDate('2026/05/27')).toBe('2026-05-27');
+  });
+
+  it('converts Naver YYYYMMDD', () => {
+    expect(toIsoDate('20260529')).toBe('2026-05-29');
+  });
+
+  it('passes blanks/odd values through', () => {
+    expect(toIsoDate('')).toBe('');
+    expect(toIsoDate(null)).toBe('');
   });
 });
 

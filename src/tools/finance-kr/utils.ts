@@ -8,6 +8,17 @@ export function toDartDate(isoDate: string): string {
 }
 
 /**
+ * Normalize the various Korean date shapes to ISO `YYYY-MM-DD`:
+ * KRX returns `YYYY/MM/DD`, Naver returns `YYYYMMDD`. Empty/odd values pass
+ * through unchanged.
+ */
+export function toIsoDate(value: unknown): string {
+  const s = String(value ?? '').trim();
+  if (/^\d{8}$/.test(s)) return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+  return s.replace(/\//g, '-');
+}
+
+/**
  * DART's majorstock/elestock endpoints return the full reporting history with
  * no server-side date filter. Sort by `rcept_dt` (YYYYMMDD string) descending
  * so the most recent disclosures come first, then cap to `limit`.

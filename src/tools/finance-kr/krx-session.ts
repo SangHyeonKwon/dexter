@@ -55,9 +55,10 @@ function getCookieOverride(): string | null {
   return cookie && !cookie.startsWith('your-') ? cookie : null;
 }
 
-function sessionFromCookie(cookie: string): KrxSession {
+export function sessionFromCookie(cookie: string): KrxSession {
   const cookies = new Map<string, string>();
-  for (const part of cookie.split(';')) {
+  for (const segment of cookie.split(';')) {
+    const part = segment.trim();
     const eq = part.indexOf('=');
     if (eq <= 0) continue;
     cookies.set(part.slice(0, eq).trim(), part.slice(eq + 1).trim());

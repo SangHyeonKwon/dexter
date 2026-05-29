@@ -1,7 +1,7 @@
 import { DynamicStructuredTool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { fetchNaverTrend } from './naver-api.js';
-import { parseKrxNumber } from './utils.js';
+import { parseKrxNumber, toIsoDate } from './utils.js';
 import { formatToolResult } from '../types.js';
 import { TTL_6H } from '../finance/utils.js';
 
@@ -36,7 +36,7 @@ export interface ForeignOwnershipRow {
 /** Map a raw Naver mobile-trend row to a friendly, numeric-parsed shape. */
 export function mapForeignRow(raw: Record<string, unknown>): ForeignOwnershipRow {
   return {
-    date: String(raw.bizdate ?? '').trim(),
+    date: toIsoDate(raw.bizdate),
     foreignHoldRatio: parseKrxNumber(raw.foreignerHoldRatio),
     foreignNetBuyQty: parseKrxNumber(raw.foreignerPureBuyQuant),
     orgNetBuyQty: parseKrxNumber(raw.organPureBuyQuant),

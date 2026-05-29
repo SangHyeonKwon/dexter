@@ -77,7 +77,7 @@ flowchart TB
 
 ### 신규 툴 (DART 기반)
 
-`OPEN_DART_KEY`가 설정되면 자동 등록됩니다.
+`DART_API_KEY`가 설정되면 자동 등록됩니다.
 
 | 툴 | 대응되는 미국 개념 | 데이터 소스 |
 |---|---|---|
@@ -85,9 +85,16 @@ flowchart TB
 | `get_filings_kr` | SEC EDGAR | DART 공시 검색 |
 | `get_large_holders_kr` | 13F (5% 이상 보유) | DART 대량보유상황보고서 |
 | `get_insider_trades_kr` | Form 4 (내부자 거래) | DART 임원·주요주주 보고 |
-| `get_nps_holdings` | (미국엔 없음) | 국민연금 국내주식 투자정보 (data.go.kr, `DATA_GO_KR_SERVICE_KEY`) |
-| `get_short_balance_kr` | Short interest | KRX 공매도 순보유잔고 (KRX 로그인 `KRX_ID`/`KRX_PW`) |
-| `get_foreign_ownership_kr` | (미국엔 없음) | 외국인 지분율 (Naver, 키 불필요) |
+
+### 신규 툴 (Korea-specific, 소스별 키)
+
+DART에 없는 한국 특화 데이터. 툴마다 소스·키가 다릅니다.
+
+| 툴 | 대응되는 미국 개념 | 데이터 소스 | 활성화 조건 |
+|---|---|---|---|
+| `get_foreign_ownership_kr` | (미국엔 없음) | 외국인 지분율 (Naver) | 항상 (키 불필요) |
+| `get_short_balance_kr` | Short interest | KRX 공매도 순보유잔고 | `KRX_ID`+`KRX_PW` 또는 `KRX_COOKIE` |
+| `get_nps_holdings` | (미국엔 없음) | 국민연금 국내주식 투자정보 (data.go.kr) | `DATA_GO_KR_SERVICE_KEY` |
 
 ### 종목 코드 해결 흐름
 

@@ -20,7 +20,7 @@ export interface KrxApiResponse {
   url: string;
 }
 
-function isLogoutBody(body: string): boolean {
+export function isLogoutBody(body: string): boolean {
   const trimmed = body.trim();
   return trimmed === 'LOGOUT' || trimmed.startsWith('<');
 }

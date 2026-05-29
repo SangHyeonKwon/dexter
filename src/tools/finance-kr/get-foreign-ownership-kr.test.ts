@@ -13,7 +13,7 @@ describe('mapForeignRow', () => {
       accumulatedTradingVolume: '32,804,208',
     };
     expect(mapForeignRow(row)).toEqual({
-      date: '20260529',
+      date: '2026-05-29',
       foreignHoldRatio: 48.27,
       foreignNetBuyQty: -1061741,
       orgNetBuyQty: 5314304,

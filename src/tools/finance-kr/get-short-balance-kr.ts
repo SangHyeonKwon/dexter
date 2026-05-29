@@ -1,7 +1,7 @@
 import { DynamicStructuredTool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { krxApi } from './krx-api.js';
-import { toDartDate, parseKrxNumber } from './utils.js';
+import { toDartDate, toIsoDate, parseKrxNumber } from './utils.js';
 import { resolveIsin } from '../../data/krx-instrument-registry.js';
 import { formatToolResult } from '../types.js';
 import { TTL_6H } from '../finance/utils.js';
@@ -48,7 +48,7 @@ export interface ShortBalanceRow {
 /** Map a raw MDCSTAT30502 row to a friendly, numeric-parsed shape. */
 export function mapShortBalanceRow(raw: Record<string, unknown>): ShortBalanceRow {
   return {
-    date: String(raw.RPT_DUTY_OCCR_DD ?? '').trim(),
+    date: toIsoDate(raw.RPT_DUTY_OCCR_DD),
     balanceQty: parseKrxNumber(raw.BAL_QTY),
     listedShares: parseKrxNumber(raw.LIST_SHRS),
     balanceAmount: parseKrxNumber(raw.BAL_AMT),
@@ -58,7 +58,7 @@ export function mapShortBalanceRow(raw: Record<string, unknown>): ShortBalanceRo
 }
 
 /** Default to a ~30-day window ending today (ISO strings). */
-function defaultRange(start?: string, end?: string): { startDate: string; endDate: string } {
+export function defaultRange(start?: string, end?: string): { startDate: string; endDate: string } {
   const endDate = end ?? new Date().toISOString().slice(0, 10);
   if (start) return { startDate: start, endDate };
   const startMs = Date.parse(endDate) - 30 * 24 * 60 * 60 * 1000;
