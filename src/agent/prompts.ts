@@ -1,4 +1,5 @@
 import { buildCompactToolDescriptions } from '../tools/registry.js';
+import { checkApiKeyExists } from '../utils/env.js';
 import { buildSkillMetadataSection, discoverSkills } from '../skills/index.js';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -83,6 +84,51 @@ ${skillList}
 - When a skill is relevant, invoke it IMMEDIATELY as your first action
 - Skills provide specialized workflows for complex tasks (e.g., DCF valuation)
 - Do not invoke a skill that has already been invoked for the current query`;
+}
+
+/**
+ * Korea-specific research playbook. Only included when DART-backed KR tools are
+ * active (DART_API_KEY present). These first-party data sources are the agent's
+ * edge over generic assistants; without explicit synthesis guidance the model
+ * defaults to a generic per-metric summary indistinguishable from a chatbot.
+ */
+function buildKoreanResearchSection(): string {
+  if (!checkApiKeyExists('DART_API_KEY')) {
+    return '';
+  }
+
+  return `## Korean Stock Research (6-digit tickers — your edge over generic assistants)
+
+You have first-party Korean data a general chatbot does NOT have: exact DART K-IFRS
+financials, daily foreign-investor flows, short-balance ratios, NPS holdings, 5%-rule
+filings, insider reports. A generic "good company, watch the price" answer wastes them.
+For any analyze / 어때 / 평가 / 매수·매도 판단 question on a Korean stock:
+
+- GATHER broadly ONLY for open-ended questions (analyze / 어때 / 평가 / 매수·매도): call
+  get_financials_kr (multi-year) AND get_foreign_ownership_kr, get_large_holders_kr,
+  get_filings_kr (recent material), plus get_short_balance_kr / get_nps_holdings when available —
+  they run concurrently. For a NARROW ask (DCF·단일 지표·특정 공시/이벤트) or when a skill is
+  driving the query, gather ONLY what that task needs; do NOT run the full sweep.
+- GROUND the answer in concrete, dated, numeric signals only you can see — not a textbook
+  description. Always state, with numbers + YoY: actual revenue / operating profit / net
+  income / margins / ROE from get_financials_kr's \`summary\` (never give an investment view
+  without earnings); 외국인 지분율 and recent net-buy trend (foreign vs 기관 vs 개인);
+  공매도 잔고비중 level + direction (≈0% = no bearish positioning / no squeeze fuel; rising =
+  building short pressure); NPS / 5%-rule / insider direction as smart-money signals.
+- SYNTHESIZE the signals into ONE integrated thesis, not separate bullets. Three strands:
+  수급(외국인·공매도·기관 방향) · 실적(매출/이익/마진/ROE) · 지배구조(대량보유 집중·계열 지분).
+  State explicitly whether they agree or conflict and which dominates — e.g.
+  "외국인 순매도 + 공매도 0% + 기관 순매수 = 고점 차익실현을 국내가 흡수; 단 삼성물산 19.7% 순환출자 = 배당·분할 제약".
+- TREAT 대량보유(get_large_holders_kr) as a valuation modifier, not a footnote: 계열사·자회사 지분이
+  크면 지배구조·순환출자·배당정책 제약, 창업주·특수관계 집중은 승계 리스크/명확성. 단일주주 >15% 또는
+  계열 합산 >30%면 구조적 요인으로 명시(예: "지배구조 할인 정당화", "분할·배분 불확실성"). 그 밖에:
+  코리아 디스카운트, 물적/인적분할 소액주주 영향, 지주사 할인, 거래세·배당세 세후 수익.
+- CLOSE with an evidence-anchored verdict and specific triggers tied to YOUR data
+  (e.g. "외국인 지분율이 48%대에서 재상승 전환 시"), not generic ones.
+
+"Concise" here means signal-dense: spend words on what only this data reveals; skip
+background the user already knows. If a source is unavailable, say so briefly and proceed —
+never pad with generic narrative to fill the gap.`;
 }
 
 function buildMemorySection(memoryFiles: string[], memoryContext?: string | null): string {
@@ -248,6 +294,8 @@ ${toolDescriptions}
 - Only use web_fetch when headlines are insufficient (need quotes, deal specifics, earnings details).
 - Tool results are automatically capped. If a result says "persisted to file", use read_file to access specific sections rather than processing the full dataset.
 - Only respond directly for conceptual definitions, stable historical facts, or conversational queries.
+
+${buildKoreanResearchSection()}
 
 ${buildSkillsSection()}
 

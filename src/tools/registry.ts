@@ -3,7 +3,7 @@ import { createGetFinancials, createGetMarketData, createReadFilings, createScre
 import { exaSearch, perplexitySearch, tavilySearch, langSearch, WEB_SEARCH_DESCRIPTION, xSearchTool, X_SEARCH_DESCRIPTION } from './search/index.js';
 import { createWebSearchTool, type WebSearchProvider } from './search/web-search.js';
 import { getSetting } from '../utils/config.js';
-import type { SearchProviderId } from '../utils/env.js';
+import { checkApiKeyExists, type SearchProviderId } from '../utils/env.js';
 import { skillTool, SKILL_TOOL_DESCRIPTION } from './skill.js';
 import { webFetchTool, WEB_FETCH_DESCRIPTION } from './fetch/web-fetch.js';
 import { browserTool, BROWSER_DESCRIPTION } from './browser/browser.js';
@@ -153,17 +153,19 @@ export function getToolRegistry(model: string): RegisteredTool[] {
 
   // Build web_search as a fallback chain over whichever providers have keys configured.
   // The user's preferred provider (set via /search) is tried first; the others act as fallbacks.
+  // checkApiKeyExists ignores empty and `your-` placeholder values — otherwise a
+  // copied env.example registers a web_search tool that 401s on every call.
   const allWebSearchProviders: WebSearchProvider[] = [];
-  if (process.env.EXASEARCH_API_KEY) {
+  if (checkApiKeyExists('EXASEARCH_API_KEY')) {
     allWebSearchProviders.push({ id: 'exa', name: 'Exa', tool: exaSearch });
   }
-  if (process.env.PERPLEXITY_API_KEY) {
+  if (checkApiKeyExists('PERPLEXITY_API_KEY')) {
     allWebSearchProviders.push({ id: 'perplexity', name: 'Perplexity', tool: perplexitySearch });
   }
-  if (process.env.TAVILY_API_KEY) {
+  if (checkApiKeyExists('TAVILY_API_KEY')) {
     allWebSearchProviders.push({ id: 'tavily', name: 'Tavily', tool: tavilySearch });
   }
-  if (process.env.LANGSEARCH_API_KEY) {
+  if (checkApiKeyExists('LANGSEARCH_API_KEY')) {
     allWebSearchProviders.push({ id: 'langsearch', name: 'LangSearch', tool: langSearch });
   }
 

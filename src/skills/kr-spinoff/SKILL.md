@@ -72,11 +72,13 @@ KR 분할 분석 진행:
 
 ## Step 5: (선택) 재무로 정량화
 
-`get_financials_kr`로 모회사의 연결 vs 별도 수치를, 가능하면 분할 전후 세그먼트 기여도를 비교해
-— 직접 보유 법인에서 얼마나 많은 이익 창출력이 빠져나갔는지 보여준다.
+`get_financials_kr`로 모회사의 연결(CFS) vs 별도(OFS) 수치를 비교해 — 직접 보유 법인에서 얼마나
+많은 이익 창출력이 빠져나갔는지 보여준다. `fs_div`가 다른 두 번의 호출이 필요하다.
 
-> DART 계정 라벨(`account_nm`)은 회사 / 연도마다 다르다 — 부분 문자열 / `account_id`로 매칭하고
-> 정확 일치는 절대 쓰지 마라.
+> 출력은 `periods[].summary`에 정규화돼 있다(KRW). `incomeStatement.revenue / operatingProfit / netIncome`,
+> `balanceSheet.totalAssets / totalEquity`를 연결·별도 각각에서 읽어 비교하라. 각 값은 `{ current, prior }`.
+> summary가 비어 있으면 `rawLineItemsFile`을 `read_file`로 연다. `account_nm`은 회사·연도마다 달라
+> 정확 일치 금지 — 부분 문자열/`account_id`로 매칭한다.
 
 ## Step 6: 출력 형식
 

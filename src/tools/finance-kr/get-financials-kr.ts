@@ -30,7 +30,7 @@ Intelligent meta-tool for retrieving Korean (KOSPI/KOSDAQ) listed company financ
 - Call ONCE with the complete natural language query — the router handles internal complexity
 - Ticker must be the 6-digit Korean code (e.g. 005930, not "005930.KS" or "삼성전자")
 - Handles year inference: "작년", "올해", "지난 분기" — converts to bsns_year + reprt_code
-- Returns raw DART line items under K-IFRS account names (Korean labels)
+- Returns a normalized per-period \`summary\` (revenue, operating profit, net income, EPS, assets/liabilities/equity, cash flow, capex, plus margins, ROE, FCF, YoY) in KRW. Full raw DART line items are saved to \`rawLineItemsFile\` for drill-down into non-standard accounts.
 `.trim();
 
 const KR_SUB_TOOLS: StructuredToolInterface[] = [getBusinessReport];
