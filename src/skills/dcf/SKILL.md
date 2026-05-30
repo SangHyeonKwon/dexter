@@ -36,7 +36,14 @@ DCF 분석 진행:
 
 > **🇰🇷 KR override:** 대신 `get_financials_kr`를 호출한다(DART 사업/반기/분기보고서로 라우팅). 자연어 쿼리 하나면 충분하다. 예: `"005930 최근 5년 연결 재무제표 현금흐름·손익·재무상태표"`. 그다음 현재가는 `get_market_data`가 한국 티커를 반환하면 그걸 쓰고, 아니면 `web_search`/`get_foreign_ownership_kr`로 최근 종가를 보완한다.
 >
-> DART 계정 라벨(`account_nm`)은 회사·연도마다 다르다 — **정확 일치 금지**. 영업수익 vs 매출액, 당기순이익(손실) 접미사 등. 부분 문자열 / 표준 `account_id`(있을 때)로 매칭하고 기간 간 정합성을 맞춘다.
+> **출력은 `periods[].summary` 에 정규화돼 있다(KRW).** 라벨을 직접 파싱하지 말고 이 필드를 읽어라:
+> - 현금흐름: `cashFlow.operating`(=영업현금흐름), `cashFlow.capex`, `ratios.freeCashFlow`(=영업CF−|capex|). `free_cash_flow`가 없으면 이 값을 쓴다.
+> - 손익: `incomeStatement.revenue / operatingProfit / netIncome`, `ratios.revenueYoYPct`.
+> - 재무상태표: `balanceSheet.totalLiabilities`(순부채 근사; 가능하면 이자부채만 별도 확인), `balanceSheet.cashAndEquivalents`, `balanceSheet.totalEquity`.
+> - 각 metric은 `{ current, prior, label, display }` 구조이며 `current`(당기)를 쓴다. 분기·반기 손익/현금흐름은 누적(YTD)임을 `summary.basis`가 알려준다.
+> - 발행주식수(`outstanding_shares`)는 summary에 없다 — `get_short_balance_kr`의 `listedShares` 또는 `web_search`로 보완한다.
+>
+> summary가 비어 있으면(은행·지주사 등 비표준 라벨) `rawLineItemsFile` 을 `read_file`로 열어 직접 찾는다. `account_nm`은 회사·연도마다 달라 **정확 일치 금지** — 부분 문자열/`account_id`로 매칭한다.
 
 ### 1.1 현금흐름 이력
 **쿼리:** `"[TICKER] annual cash flow statements for the last 5 years"`
